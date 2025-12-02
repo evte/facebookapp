@@ -7,6 +7,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
@@ -108,6 +109,8 @@ class TenancyServiceProvider extends ServiceProvider
         // 配置 TenantAssetsController 使用自定义中间件
         \Stancl\Tenancy\Controllers\TenantAssetsController::$tenancyMiddleware =
             \App\Http\Middleware\InitializeTenancyByDomainColumn::class;
+
+        $this->prepareLivewireForTenancy();
     }
 
     protected function bootEvents()
@@ -144,10 +147,26 @@ class TenancyServiceProvider extends ServiceProvider
             Middleware\InitializeTenancyByDomainOrSubdomain::class,
             Middleware\InitializeTenancyByPath::class,
             Middleware\InitializeTenancyByRequestData::class,
+            \App\Http\Middleware\InitializeTenancyByDomainColumn::class, // Add custom middleware
         ];
 
         foreach (array_reverse($tenancyMiddleware) as $middleware) {
             $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependToMiddlewarePriority($middleware);
+        }
+    }
+
+    private function prepareLivewireForTenancy(): void
+    {
+        if (!in_array(request()->host(), config('tenancy.central_domains'))) {
+            Livewire::setUpdateRoute(function ($handle) {
+                return Route::post('/livewire/update', $handle)
+                    ->middleware(
+                        [
+                            \App\Http\Middleware\InitializeTenancyByDomainColumn::class,
+                            'web',
+                        ]
+                    )->name('livewire.update');
+            });
         }
     }
 }

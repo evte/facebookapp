@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('Central Admin')
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -51,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\PreventAccessFromTenantDomains::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

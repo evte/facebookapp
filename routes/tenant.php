@@ -45,4 +45,8 @@ Route::middleware([
             'request_host' => request()->getHost(),
         ]);
     });
+
+    // Facebook Auth Routes
+    Route::get('/facebook/connect', [\App\Http\Controllers\Tenant\FacebookAuthController::class, 'redirect'])->name('tenant.facebook.connect');
+    Route::get('/facebook/callback', [\App\Http\Controllers\Tenant\FacebookAuthController::class, 'callback'])->name('tenant.facebook.callback');
 });

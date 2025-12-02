@@ -26,11 +26,13 @@ class TenantPanelProvider extends PanelProvider
         return $panel
             ->id('tenant')
             ->path('tenant')
+            ->brandName(fn () => tenant('name') ? 'Tenant: ' . tenant('name') : 'Tenant Panel')
             ->colors([
                 'primary' => Color::Red,
             ])
             ->spa()
             ->login()
+            ->registration()
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\Filament\Tenant\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\Filament\Tenant\Pages')
             ->pages([
@@ -42,6 +44,8 @@ class TenantPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->middleware([
+                \App\Http\Middleware\InitializeTenancyByDomainColumn::class,
+                \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
@@ -51,8 +55,6 @@ class TenantPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \App\Http\Middleware\InitializeTenancyByDomainColumn::class,
-                \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
