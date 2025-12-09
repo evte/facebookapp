@@ -23,9 +23,9 @@ Route::middleware([
     InitializeTenancyByDomainColumn::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+    // Route::get('/', function () {
+    //     return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+    // });
 
     // 测试路由：检查租户识别和数据库切换
     Route::get('/test-tenant', function () {

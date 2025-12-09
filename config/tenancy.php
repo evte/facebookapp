@@ -19,7 +19,7 @@ return [
         '127.0.0.1',
         'localhost',
         'admin.yuriapp.com',
-        'app.createapp.site'
+        'createapp.site'
     ],
 
     /**
